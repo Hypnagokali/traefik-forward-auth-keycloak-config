@@ -1,0 +1,34 @@
+{
+  "realm": "test",
+  "enabled": true,
+  "users": [
+    {
+      "username": "hans.hase@example.org",
+      "enabled": true,
+      "email": "hans.hase@example.org",
+      "emailVerified": true,
+      "firstName": "Hans",
+      "lastName": "Hase",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "test123"
+        }
+      ]
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "test",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "secret": "test-client-secret",
+      "redirectUris": [
+        "http://app1.his-test/*",
+        "http://app2.his-test/*"
+      ],
+      "directAccessGrantsEnabled": true
+    }
+  ]
+}

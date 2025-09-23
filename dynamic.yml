@@ -1,0 +1,29 @@
+http:
+  routers:
+    keycloak:
+      rule: "Host(`auth.his-test`)"
+      entryPoints:
+        - web
+      service: keycloak
+    app1:
+      rule: "Host(`app1.his-test`)"
+      entryPoints:
+        - web
+      service: app1-service
+      middlewares:
+        - forward-auth
+  services:
+    keycloak:
+      loadBalancer:
+        servers:
+          - url: "http://keycloak:8080"
+    app1-service:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:9797"
+          # - url: "http://172.17.0.1:9797"
+  middlewares:
+    forward-auth:
+      forwardAuth:
+        address: "http://forward-auth:4181"
+        trustForwardHeader: true
