@@ -1,7 +1,16 @@
-use actix_web::{web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{web, App, HttpRequest, HttpResponse, HttpServer, Responder};
 
-async fn hello() -> impl Responder {
-    HttpResponse::Ok().body("Hello, Actix Web!")
+async fn hello(req: HttpRequest) -> impl Responder {
+    match req.cookie("_forward_auth") {
+        Some(cookie) => {
+            let val = cookie.value().split("|").collect::<Vec<&str>>();
+            let email = val.get(2).unwrap_or(&"default");
+            HttpResponse::Ok().body(format!("Test app. User: {}", email))
+        }
+        None => {
+            HttpResponse::Unauthorized().body("No _forward_auth cookie found")
+        }
+    }
 }
 
 #[actix_web::main]

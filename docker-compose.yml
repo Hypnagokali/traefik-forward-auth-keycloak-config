@@ -41,6 +41,7 @@ services:
       SECRET: your-cookie-secret
       COOKIE_SECURE: false
       COOKIE_DOMAIN: .his-test
+      HEADERS: X-Forwarded-User,X-Forwarded-Email,X-Forwarded-Roles
       URL: http://forward-auth:4181
       LOG_LEVEL: info
     extra_hosts:

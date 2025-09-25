@@ -1,6 +1,30 @@
 {
   "realm": "test",
   "enabled": true,
+  "roles": {
+    "realm": [
+      {
+        "name": "MyRole",
+        "description": "",
+        "composite": false,
+        "clientRole": false,
+        "attributes": {}
+      }
+    ]
+  },
+  "groups": [
+    {
+      "name": "MyGroup",
+      "description": "",
+      "path": "/MyGroup",
+      "subGroups": [],
+      "attributes": {},
+      "realmRoles": [
+        "MyRole"
+      ],
+      "clientRoles": {}
+    }
+  ],
   "users": [
     {
       "username": "hans.hase@example.org",
