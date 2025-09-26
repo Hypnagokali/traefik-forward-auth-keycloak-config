@@ -12,6 +12,13 @@ http:
       service: app1-service
       middlewares:
         - forward-auth
+    app2:
+      rule: "Host(`app2.his-test`)"
+      entryPoints:
+        - web
+      service: app2-service
+      middlewares:
+        - forward-auth
   services:
     keycloak:
       loadBalancer:
@@ -21,9 +28,14 @@ http:
       loadBalancer:
         servers:
           - url: "http://host.docker.internal:9797"
-          # - url: "http://172.17.0.1:9797"
+    app2-service:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:9798"
   middlewares:
     forward-auth:
       forwardAuth:
         address: "http://forward-auth:4181"
         trustForwardHeader: true
+        authResponseHeaders:
+          - X-Forwarded-User

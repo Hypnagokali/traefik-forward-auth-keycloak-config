@@ -39,9 +39,8 @@ services:
       PROVIDERS_OIDC_CLIENT_ID: test
       PROVIDERS_OIDC_CLIENT_SECRET: test-client-secret
       SECRET: your-cookie-secret
-      COOKIE_SECURE: false
+      INSECURE_COOKIE: true
       COOKIE_DOMAIN: .his-test
-      HEADERS: X-Forwarded-User,X-Forwarded-Email,X-Forwarded-Roles
       URL: http://forward-auth:4181
       LOG_LEVEL: info
     extra_hosts:
