@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   traefik:
     image: traefik:v2.10
@@ -21,7 +19,7 @@ services:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
       KC_PROXY_HEADERS: xforwarded
-      KC_HOSTNAME: auth.his-test
+      KC_HOSTNAME: auth.his-test.local
       KC_DB: dev-mem
     ports:
       - "8181:8080"
@@ -31,33 +29,22 @@ services:
     networks:
       - his
 
-  forward-auth:
-    image: thomseddon/traefik-forward-auth:2
-    environment:
-      DEFAULT_PROVIDER: oidc
-      PROVIDERS_OIDC_ISSUER_URL: http://auth.his-test/realms/test
-      PROVIDERS_OIDC_CLIENT_ID: test
-      PROVIDERS_OIDC_CLIENT_SECRET: test-client-secret
-      SECRET: your-cookie-secret
-      INSECURE_COOKIE: true
-      COOKIE_DOMAIN: .his-test
-      URL: http://forward-auth:4181
-      LOG_LEVEL: info
+  oauth2-proxy:
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.12.0
     extra_hosts:
-      - "auth.his-test:host-gateway"
+      - "auth.his-test.local:host-gateway"
+    volumes:
+      - ./oauth2-proxy.cfg:/oauth2-proxy.cfg
     restart: on-failure
     ports:
-      - "4181:4181"
-    depends_on: 
+      - "4180:4180"
+    depends_on:
       - keycloak
     networks:
       - his
+    command:
+      - --config=/oauth2-proxy.cfg
 networks:
   his:
     driver: bridge
 
-# Note:
-# - Replace 'your-client-secret' and 'your-cookie-secret' with secure values.
-# - You must create an OIDC client in Keycloak named 'traefik-forward-auth' and set its secret accordingly.
-# - Adjust hostnames, emails, and other values as needed for your environment.
-# - For production, use proper TLS and secure secrets.

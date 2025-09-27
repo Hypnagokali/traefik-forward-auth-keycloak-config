@@ -1,16 +1,7 @@
 use actix_web::{web, App, HttpRequest, HttpResponse, HttpServer, Responder};
 
-async fn app2_index(req: HttpRequest) -> impl Responder {
-    match req.cookie("_forward_auth") {
-        Some(cookie) => {
-            let val = cookie.value().split("|").collect::<Vec<&str>>();
-            let email = val.get(2).copied().unwrap_or("not logged in");
-            HttpResponse::Ok().body(format!("Test app 2. User: {}", email))
-        }
-        None => {
-            HttpResponse::Unauthorized().body("No _forward_auth cookie found")
-        }
-    }
+async fn app2_index(_req: HttpRequest) -> impl Responder {
+    HttpResponse::Ok().body("App2 currently not secured")
 }
 
 #[actix_web::main]

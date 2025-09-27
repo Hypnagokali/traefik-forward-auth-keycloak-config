@@ -49,8 +49,9 @@
       "publicClient": false,
       "secret": "test-client-secret",
       "redirectUris": [
-        "http://app1.his-test/*",
-        "http://app2.his-test/*"
+        "http://app1.his-test.local/*",
+        "http://app2.his-test.local/*",
+        "http://oauth2-proxy.his-test.local/oauth2/callback"
       ],
       "directAccessGrantsEnabled": true
     }

@@ -1,25 +1,32 @@
 http:
   routers:
+    oauth2-proxy-route:
+      rule: "Host(`oauth2-proxy.his-test.local`)"
+      service: oauth-backend
     keycloak:
-      rule: "Host(`auth.his-test`)"
+      rule: "Host(`auth.his-test.local`)"
       entryPoints:
         - web
       service: keycloak
     app1:
-      rule: "Host(`app1.his-test`)"
+      rule: "Host(`app1.his-test.local`)"
       entryPoints:
         - web
       service: app1-service
       middlewares:
         - forward-auth
     app2:
-      rule: "Host(`app2.his-test`)"
+      rule: "Host(`app2.his-test.local`)"
       entryPoints:
         - web
       service: app2-service
       middlewares:
         - forward-auth
   services:
+    oauth-backend:
+      loadBalancer:
+        servers:
+          - url: http://oauth2-proxy:4180
     keycloak:
       loadBalancer:
         servers:
@@ -35,7 +42,7 @@ http:
   middlewares:
     forward-auth:
       forwardAuth:
-        address: "http://forward-auth:4181"
-        trustForwardHeader: true
+        address: "http://oauth2-proxy:4180"
         authResponseHeaders:
-          - X-Forwarded-User
+          - X-Auth-Request-Access-Token
+          - Authorization

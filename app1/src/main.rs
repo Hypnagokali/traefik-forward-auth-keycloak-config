@@ -1,16 +1,43 @@
 use actix_web::{web, App, HttpRequest, HttpResponse, HttpServer, Responder};
+use jsonwebtoken::{decode, DecodingKey, Validation};
+
+#[derive(Debug, serde::Deserialize)]
+struct Claims {
+    pub name: String,
+}
 
 async fn app1_index(req: HttpRequest) -> impl Responder {
-    // todo: read user from X-Forwarded-User header instead of cookie
-    match req.cookie("_forward_auth") {
-        Some(cookie) => {
-            let val = cookie.value().split("|").collect::<Vec<&str>>();
-            let email = val.get(2).copied().unwrap_or("not logged in");
-            HttpResponse::Ok().body(format!("Test app. User: {}", email))
+    match req.headers().get("authorization") {
+        Some(header) => {
+            let token = header.to_str().unwrap().replace("Bearer ", "");
+            let mut validation = Validation::default();
+            // ToDo: verify signature
+            validation.insecure_disable_signature_validation();
+            // Disable exp validation for testing purposes (needs discussion)
+            validation.validate_exp = false;
+            validation.set_audience(&["test"]);
+
+            let token_data = decode::<Claims>(
+                &token,
+                &DecodingKey::from_secret(b"ignored for now"),
+                &validation,
+            );
+
+            match token_data {
+                Ok(data) => {
+                    return HttpResponse::Ok().body(format!("Test app 1. User: {}", data.claims.name))
+                }
+                Err(err) => {
+                    // Its possible to get an expired token from oauth2-proxy
+                    // delete cookie here
+                    println!("Token decode error: {:?}", err);
+                    return HttpResponse::Unauthorized().body("Invalid token");
+                }
+            }
         }
         None => {
-            HttpResponse::Unauthorized().body("No _forward_auth cookie found")
-        }
+            return HttpResponse::Unauthorized().body("No Authorization header found");
+        },
     }
 }
 
