@@ -4,6 +4,7 @@ use jsonwebtoken::{decode, DecodingKey, Validation};
 #[derive(Debug, serde::Deserialize)]
 struct Claims {
     pub name: String,
+    pub roles: Vec<String>,
 }
 
 async fn app1_index(req: HttpRequest) -> impl Responder {
@@ -25,7 +26,8 @@ async fn app1_index(req: HttpRequest) -> impl Responder {
 
             match token_data {
                 Ok(data) => {
-                    return HttpResponse::Ok().body(format!("Test app 1. User: {}", data.claims.name))
+                    let roles = data.claims.roles.join(", ");
+                    return HttpResponse::Ok().body(format!("Test app 1. User: '{}' with roles: '{}'", data.claims.name, roles))
                 }
                 Err(err) => {
                     // Its possible to get an expired token from oauth2-proxy
