@@ -7,6 +7,7 @@ async fn app2_index(req: HttpRequest) -> impl Responder {
             println!("Auth Header: {}: {:?}", k, v);
         }
     });
+    
     HttpResponse::Ok().body("App2 currently not secured")
 }
 
